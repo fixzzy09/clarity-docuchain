@@ -8,6 +8,7 @@ A decentralized document verification and storage system built on Stacks blockch
 - Track document history
 - Manage document access permissions
 - Support document metadata
+- Revoke documents
 
 ## Usage
 
@@ -23,6 +24,11 @@ A decentralized document verification and storage system built on Stacks blockch
 ### Verify a document
 ```clarity
 (contract-call? .docuchain verify-document "QmHash...")
+```
+
+### Revoke a document
+```clarity
+(contract-call? .docuchain revoke-document "QmHash...")
 ```
 
 ## Development
