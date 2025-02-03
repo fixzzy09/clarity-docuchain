@@ -80,3 +80,27 @@ Clarinet.test({
     });
   },
 });
+
+Clarinet.test({
+  name: "Can revoke a document",
+  async fn(chain: Chain, accounts: Map<string, Account>) {
+    const wallet_1 = accounts.get("wallet_1")!;
+    
+    let block = chain.mineBlock([
+      Tx.contractCall("docuchain", "store-document", [
+        types.ascii("QmHash123"),
+        types.ascii("Test Document"),
+        types.ascii("application/pdf")
+      ], wallet_1.address),
+      Tx.contractCall("docuchain", "revoke-document", [
+        types.ascii("QmHash123")
+      ], wallet_1.address),
+      Tx.contractCall("docuchain", "verify-document", [
+        types.ascii("QmHash123")
+      ], wallet_1.address)
+    ]);
+    
+    assertEquals(block.receipts[1].result, '(ok true)');
+    assertEquals(block.receipts[2].result.expectOk().expectTuple().status, 'revoked');
+  },
+});
