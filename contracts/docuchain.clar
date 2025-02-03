@@ -5,6 +5,7 @@
 (define-constant err-not-found (err u404))
 (define-constant err-unauthorized (err u403))
 (define-constant err-already-exists (err u409))
+(define-constant err-invalid-status (err u400))
 
 ;; Data structures
 (define-map documents
@@ -60,6 +61,19 @@
     (map-set document-access
       { hash: hash, user: user }
       { can-read: can-read, can-update: can-update }
+    )
+    (ok true)
+  )
+)
+
+(define-public (revoke-document (hash (string-ascii 64)))
+  (let ((doc-info (get-document-info hash)))
+    (asserts! (is-eq tx-sender (get owner (unwrap! doc-info err-not-found))) err-unauthorized)
+    (map-set documents
+      { hash: hash }
+      (merge (unwrap! doc-info err-not-found)
+        { status: "revoked" }
+      )
     )
     (ok true)
   )
